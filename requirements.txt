@@ -1,0 +1,6 @@
+rich
+yt-dlp
+pyperclip
+requests
+pillow
+mutagen
