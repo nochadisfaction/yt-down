@@ -17,7 +17,6 @@ from rich.prompt import Prompt, Confirm
 from rich.table import Table
 
 CONFIG_FILE = "yt_downloader_config.json"
-
 class GracefulExit(Exception): pass
 
 def load_config():
@@ -132,8 +131,7 @@ def embed_cover_audiofile(path, img_file, fmt):
         except:
             audio = ID3()
         with open(img_file, 'rb') as imgf:
-            audio.add(APIC(
-                encoding=3, mime='image/jpeg', type=3, desc=u'Cover', data=imgf.read()))
+            audio.add(APIC(encoding=3, mime='image/jpeg', type=3, desc=u'Cover', data=imgf.read()))
         audio.save(path)
     elif fmt == "flac":
         audio = FLAC(path)
@@ -220,6 +218,7 @@ def download_task(opts, url_list, summary, mode, console, fmt, playlist_seq=None
                             write_tags(final_path, info, fmt, ix, album)
                             if do_lyrics:
                                 save_yt_description(final_path, info.get("description"))
+                    summary.append([final_path if final_path else url, file_type, status, natural_size(size) if size else ""])
                     progress.remove_task(task)
                     break
                 except Exception as e:
@@ -229,13 +228,11 @@ def download_task(opts, url_list, summary, mode, console, fmt, playlist_seq=None
                     if retry >= max_retries:
                         console.print(f"❌ Failed to download: {url} - {str(e)}")
                         failed.append(url)
+                        summary.append([final_path if final_path else url, file_type, status, natural_size(size) if size else ""])
                         break
                     else:
                         console.print(f"Retrying ({retry}/{max_retries}) for {url} ...")
                         continue
-                summary.append([final_path if final_path else url, file_type, status, natural_size(size) if size else ""])
-            else:
-                summary.append([final_path if final_path else url, file_type, status, natural_size(size) if size else ""])
         if failed:
             console.print("[bold red]These failed:[/bold red]")
             for url in failed:
